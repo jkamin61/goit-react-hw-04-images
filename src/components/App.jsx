@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Component } from 'react';
+import { useState } from 'react';
 import SearchBar from './SearchBar/SearchBar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
@@ -10,81 +10,62 @@ const API_KEY = '33266865-f80f9d7d450116be71a3c9bed';
 const QUERY = 'https://pixabay.com/api/';
 const PER_PAGE = '12';
 
-export class App extends Component {
+export const App = () => {
+const [articles, setArticles] = useState([]);
+const [isLoading, setIsLoading] = useState(false);
+const [page, setPage] = useState(1);
+const [searchQuery, setSearchQuery] = useState('');
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      articles: [],
-      isLoading: false,
-      page: 1,
-      searchQuery: '',
-    };
-
-    this.handleSearch = this.handleSearch.bind(this);
-    this.handleLoadMore = this.handleLoadMore.bind(this);
-  }
-
-  async handleSearch(event) {
+  async function handleSearch(event) {
     event.preventDefault();
     const inputValueOnSearch = event.target.value;
-    this.setState({
-      isLoading: true,
-      articles: [],
-      page: 1,
-      searchQuery: inputValueOnSearch,
-    });
+    setArticles([]);
+    setIsLoading(true);
+    setPage(1);
+    setSearchQuery(inputValueOnSearch);
 
     try {
       const response = await axios.get(
         `${QUERY}?key=${API_KEY}&q=${inputValueOnSearch}&image_type=photo&per_page=${PER_PAGE}`,
       );
-      this.setState({ articles: response.data.hits });
+      setArticles(response.data.hits);
     } catch (error) {
       console.log(error);
     } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
   }
 
-  async handleLoadMore() {
-    const { articles, page, searchQuery } = this.state;
-
-    this.setState({ isLoading: true });
+  async function handleLoadMore() {
+    setIsLoading(true);
 
     try {
       const response = await axios.get(
         `${QUERY}?key=${API_KEY}&q=${searchQuery}&image_type=photo&per_page=${PER_PAGE}&page=${page + 1}`,
       );
-      this.setState({
-        articles: [...articles, ...response.data.hits],
-        page: page + 1,
-      });
+      setArticles([...articles, ...response.data.hits]);
+      setPage(page + 1);
     } catch (error) {
       console.log(error);
     } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
   }
-
-  render() {
     return (
       <div>
         <SearchBar
-          handleSearch={this.handleSearch}
+          handleSearch={handleSearch}
         ></SearchBar>
         <ImageGallery items={
           <ImageGalleryItem
-            items={this.state.articles}
+            items={articles}
           ></ImageGalleryItem>
         }>
         </ImageGallery>
-        {this.state.articles.length > 0 && <Button onClick={this.handleLoadMore}></Button>}
-        {this.state.isLoading && <Loader></Loader>}
+        {articles.length > 0 && <Button onClick={handleLoadMore}></Button>}
+        {isLoading && <Loader></Loader>}
       </div>
     );
-  };
 }
 
 

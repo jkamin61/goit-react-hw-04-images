@@ -1,8 +1,6 @@
 import { MagnifyingGlass } from 'react-loader-spinner';
-import { Component } from 'react';
 
-export default class Loader extends Component {
-  render() {
+const Loader = () =>  {
     return (
       <div className={'loader'}>
         <MagnifyingGlass
@@ -17,5 +15,6 @@ export default class Loader extends Component {
         />
       </div>
     );
-  }
 }
+
+export default Loader;

@@ -1,10 +1,11 @@
-import { Component } from 'react';
+import PropTypes from 'prop-types';
 
-export default class ImageGallery extends Component {
-  render() {
-    const { items } = this.props;
-    return (
-      <div className={'image-gallery'}>{items}</div>
-    );
-  }
+const ImageGallery = ({ items }) => {
+  return <div className={'image-gallery'}>{items}</div>;
 }
+
+ImageGallery.propTypes = {
+  items: PropTypes.any.isRequired,
+}
+
+export default ImageGallery;

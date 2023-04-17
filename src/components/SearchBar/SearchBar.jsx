@@ -1,9 +1,7 @@
-import { Component } from 'react';
 import loop from './search-loop.svg';
+import PropTypes from 'prop-types';
 
-export default class SearchBar extends Component {
-  render() {
-    const { handleSearch } = this.props;
+const SearchBar = ( { handleSearch }) => {
     return (
       <header className={'search-bar'}>
           <form className={'search-bar__form'} onSubmit={(e) => {
@@ -20,5 +18,9 @@ export default class SearchBar extends Component {
           </form>
       </header>
     );
-  }
 }
+
+SearchBar.propTypes = {
+  handleSearch: PropTypes.func.isRequired,
+}
+export default SearchBar;

@@ -1,39 +1,27 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import Loader from '../Loader/Loader';
+import PropTypes from 'prop-types';
 
-export default class Modal extends Component {
+const Modal = ({onClose, image}) => {
+    const [isLoading, setIsLoading] = useState(true);
 
-  constructor(props) {
-    super(props);
+  const handleImageLoad = () => {
+    setIsLoading(false);
+  }
 
-    this.state = {
-      isLoading: true,
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
     };
+  }, []);
 
-    this.handleImageLoad = this.handleImageLoad.bind(this);
-  }
-
-  handleImageLoad() {
-    this.setState({ isLoading: false });
-  }
-
-  componentDidMount() {
-    document.addEventListener('keydown', this.handleKeyDown);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeyDown);
-  }
-
-  handleKeyDown = (event) => {
+  const handleKeyDown = (event) => {
     if (event.key === 'Escape') {
       this.props.onClose();
     }
   };
 
-  render() {
-    const { image, onClose } = this.props;
-    const { isLoading } = this.state;
     return (
       <div className='modal-overlay' onClick={onClose}>
         <div className='modal-container' onClick={(e) => e.stopPropagation()}>
@@ -42,10 +30,16 @@ export default class Modal extends Component {
             src={image.largeImageURL}
             alt={image.tags}
             className='modal-image'
-            onLoad={this.handleImageLoad}
+            onLoad={handleImageLoad}
           />
         </div>
       </div>
     );
-  }
 }
+
+Modal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  image: PropTypes.object.isRequired,
+}
+
+export default Modal;
